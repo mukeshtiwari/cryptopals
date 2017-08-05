@@ -5,6 +5,7 @@
 ;;https://github.com/racket/racket/blob/master/racket/collects/file/sha1.rkt
 ;;learn bitsyntax and rewrite this using bit pattern matching
 
+;;hexstring to bytes
 (define (hex-string->bytes s)
   (unless (and (string? s) (regexp-match? #px"^([[:xdigit:]]{2})*$" s))
     (raise-argument-error 'hex-string->bytes
@@ -50,6 +51,17 @@
     (bytes->hex-string (list->bytes (map (lambda (w) (bitwise-xor (car w) (cdr w))) zipls)))))
 
 
+;;third challenge
 
+(define (bytes-xor fbstr sbstr)
+  (let* ([l(bytes->list fbstr)]
+        [s (bytes->list sbstr)]
+        [zipls (map cons l s)])
+    (list->bytes (map (lambda (w) (bitwise-xor (car w) (cdr w))) zipls))))
+      
+(define (third-challenge str)
+  (let* ([l (hex-string->bytes str)]
+         [s (map (lambda (v) (make-bytes (bytes-length l) v)) (range 0 255))])
+    (map (lambda (v) (bytes-xor l v)) s)))
 
-  
+;; #"Cooking MC's like a pound of bacon" 
