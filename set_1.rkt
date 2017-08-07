@@ -54,9 +54,9 @@
 ;;third challenge
 
 (define (bytes-xor fbstr sbstr)
-  (let* ([l(bytes->list fbstr)]
-        [s (bytes->list sbstr)]
-        [zipls (map cons l s)])
+  (let* ([l (bytes->list fbstr)]
+         [s (bytes->list sbstr)]
+         [zipls (map cons l s)])
     (list->bytes (map (lambda (w) (bitwise-xor (car w) (cdr w))) zipls))))
       
 (define (third-challenge str)
