@@ -118,7 +118,7 @@
                  
 
 (define (score-bytes byts)
-  (apply + (map (lambda (b) (hash-ref freqs (make-bytes 1 b) 0))
+  (apply + (map (lambda (b) (hash-ref freqs (bytes b) 0))
                 (bytes->list byts))))
                  
 (define (bytes-xor fbstr sbstr)
@@ -144,3 +144,25 @@
   (argmax cdr (map third-challenge (file->lines file))))
 
 (fourth-challenge "4.txt")
+
+(define (string-repeat n str)
+  (if (= n 0) str
+      (string-append str (string-repeat (- n 1) str))))
+
+(define (fifth-challenge str key )
+  (let* ([len (string-length str)]
+         [rkey (string-repeat len key)]
+         [byte-str (string->bytes/utf-8 str)]
+         [byte-key (string->bytes/utf-8 (substring rkey 0 len))])
+    (bytes->hex-string (bytes-xor byte-str byte-key))))
+                        
+
+(define str "Burning 'em, if you ain't quick and nimble
+I go crazy when I hear a cymbal")
+
+;This one is bit crazy because there should be no new line in
+; output
+(fifth-challenge str "ICE")
+(string=? (fifth-challenge str "ICE") "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
+
+
