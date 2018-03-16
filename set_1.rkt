@@ -51,17 +51,16 @@
   #t)
 
 ;;second challenge
-
 (define (second-challenge fstr sstr)
   (let* ([l (bytes->list (hex-string->bytes fstr))]
          [s (bytes->list (hex-string->bytes sstr))]
          [zipls (map cons l s)])
     (bytes->hex-string (list->bytes (map (lambda (w) (bitwise-xor (car w) (cdr w))) zipls)))))
 
+(second-challenge "1c0111001f010100061a024b53535009181c"
+                  "686974207468652062756c6c277320657965")
 
 ;;third challenge
-
-
 (define freqs (make-immutable-hash 
                '((#"a" . 0.0651738)
                  (#"b" . 0.0124248)
@@ -118,14 +117,9 @@
                  (#" " . 0.1918182))))
                  
 
-
 (define (score-bytes byts)
   (apply + (map (lambda (b) (hash-ref freqs (make-bytes 1 b) 0))
                 (bytes->list byts))))
-
-(define (printable-byte-list blist)
-  (andmap (lambda (c) (and (>= c 32) (<= c 126)))
-          (bytes->list blist)))
                  
 (define (bytes-xor fbstr sbstr)
   (let* ([l (bytes->list fbstr)]
@@ -138,12 +132,15 @@
          [s (map (lambda (v) (make-bytes (bytes-length l) v)) (range 0 255))]
          [t (map (lambda (v) (let* ([blv (bytes-xor l v)]
                                     [slv (score-bytes blv)])
-                   (cons blv slv))) s)])
-    t))
+                   (cons (cons v blv) slv))) s)])
+    (argmax cdr t)))
 
 
 (third-challenge "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736")
 ;; #"Cooking MC's like a pound of bacon"
 
+;; fourth challenge
+(define (fourth-challenge file)
+  (argmax cdr (map third-challenge (file->lines file))))
 
-;(map third-challenge (file->lines "4.txt"))
+(fourth-challenge "4.txt")
