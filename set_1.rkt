@@ -1,6 +1,7 @@
 #lang racket
 (require bitsyntax
-         redex)
+         redex
+         net/base64)
 
 ;;taken from library
 ;;https://github.com/racket/racket/blob/master/racket/collects/file/sha1.rkt
@@ -43,12 +44,94 @@
         (bytes-set! bstr2 (+ (* 2 i) 1) (digit (bitwise-and c #xF)))))
     (bytes->string/latin-1 bstr2)))
 
+(define base64 (make-immutable-hash 
+               '((0 . "A")
+                 (1 . "B")
+                 (2 . "C")
+                 (3 . "D")
+                 (4 . "E")
+                 (5 . "F")
+                 (6 . "G")
+                 (7 . "H")
+                 (8 . "I")
+                 (9 . "J")
+                 (10 . "K")
+                 (11 . "L")
+                 (12 . "M")
+                 (13 . "N")
+                 (14 . "O")
+                 (15 . "P")
+                 (16 . "Q")
+                 (17 . "R")
+                 (18 . "S")
+                 (19 . "T")
+                 (20 . "U")
+                 (21 . "V")
+                 (22 . "W")
+                 (23 . "X")
+                 (24 . "Y")
+                 (25 . "Z")
+                 (26 . "a")
+                 (27 . "b")
+                 (28 . "c")
+                 (29 . "d")
+                 (30 . "e")
+                 (31 . "f")
+                 (32 . "g")
+                 (33 . "h")
+                 (34 . "i")
+                 (35 . "j")
+                 (36 . "k")
+                 (37 . "l")
+                 (38 . "m")
+                 (39 . "n")
+                 (40 . "o")
+                 (41 . "p")
+                 (42 . "q")
+                 (43 . "r")
+                 (44 . "s")
+                 (45 . "t")
+                 (46 . "u")
+                 (47 . "v")
+                 (48 . "w")
+                 (49 . "x")
+                 (50 . "y")
+                 (51 . "z")
+                 (52 . "0")
+                 (53 . "1")
+                 (54 . "2")
+                 (55 . "3")
+                 (56 . "4")
+                 (57 . "5")
+                 (58 . "6")
+                 (59 . "7")
+                 (60 . "8")
+                 (61 . "9")
+                 (62 . "+")
+                 (63 . "/"))))
+                 
 
 ;; use bitsyntax to convert bytes into base64 string
-;; first challenge
-
-(define (first-challenge byte-list)
-  #t)
+;; bytes to Base64 string
+(define (base64-encode bytes)
+  (bit-string-case bytes
+                   ([(f :: bits 6) (rest :: binary)] (string-append (hash-ref base64 f 0) (base64-encode rest)))
+                   ([(rest :: bits 0)] "")
+                   ([(rest :: bits 2)] (string-append
+                                        (hash-ref
+                                         base64
+                                         (bit-string->unsigned-integer (bit-string (rest :: bits 2) (0 :: bits 4)) #f) 0) "=="))
+                   ([(rest :: bits 4)] (string-append
+                                        (hash-ref
+                                         base64
+                                         (bit-string->unsigned-integer (bit-string (rest :: bits 4) (0 :: bits 2)) #f) 0) "="))))
+                                        
+                   
+;;first challenge
+(define (first-challenge hexstr)
+  (let* ([bystr (hex-string->bytes hexstr)]
+         [bastr (base64-encode bystr)])
+    bastr))
 
 ;;second challenge
 (define (second-challenge fstr sstr)
