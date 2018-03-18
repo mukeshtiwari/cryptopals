@@ -191,9 +191,8 @@
                                          (bit-string->unsigned-integer (bit-string (rest :: bits 4) (0 :: bits 2)) #f) 0) "="))))
                                         
 ;; assume length is always divisible by 4
-;; and all characters are valid.
+;; and all characters are valid. base64 string to bytes.
 (define (base64-decode bstr)
-
   (define (base64-string-bitstring bsstr)
     (if (non-empty-string? bsstr)
         (let* ([fic (bit-string ((hash-ref base64 (string (string-ref bsstr 0)) 0) :: bits 6))]
@@ -202,17 +201,12 @@
                [foc (bit-string ((hash-ref base64 (string (string-ref bsstr 3)) 0) :: bits 6))])
           (bit-string-append fic sec thc foc (base64-string-bitstring (substring bsstr 4))))
       #""))
-  
   (define (bitstring-bytes byts)
     (bit-string-case byts
                      ([(f :: bits 8) (rest :: binary)] (cons f (bitstring-bytes rest)))
                      ([(_ :: bits 0)] '())))
-  
-  (list->bytes (bitstring-bytes (base64-string-bitstring bstr))))
-    
-       
-
-         
+  (list->bytes (takef (bitstring-bytes (base64-string-bitstring bstr))
+                      (λ(v) (> v 0)))))       
   
   
 ;;first challenge
