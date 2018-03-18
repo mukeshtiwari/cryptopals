@@ -1,6 +1,7 @@
 #lang racket
 (require bitsyntax
-         redex)
+         redex
+         crypto)
 
 ;;taken from library
 ;;https://github.com/racket/racket/blob/master/racket/collects/file/sha1.rkt
@@ -156,7 +157,6 @@
                   ("m" . 38)
                   ("q" . 42)
                   ("e" . 30)
-                  (0 . "A")
                   ("T" . 19)
                   ("X" . 23)
                   ("b" . 27)
@@ -205,8 +205,9 @@
     (bit-string-case byts
                      ([(f :: bits 8) (rest :: binary)] (cons f (bitstring-bytes rest)))
                      ([(_ :: bits 0)] '())))
-  (list->bytes (takef (bitstring-bytes (base64-string-bitstring bstr))
-                      (λ(v) (> v 0)))))       
+  ;;Try to change it. If bstr contains one = then remove one
+  ;; byte from last. If two, ==, then remove two bytes
+  (list->bytes (bitstring-bytes (base64-string-bitstring bstr))))       
   
   
 ;;first challenge
