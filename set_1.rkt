@@ -349,4 +349,17 @@ I go crazy when I hear a cymbal")
     (decrypt '(aes ecb) #"YELLOW SUBMARINE" #"" (base64-decode inp))))
 
 (seventh-challenge "7.txt")
+
+(define (split-string-at-n str n)
+  (cond
+    [(string=? str "") '()]
+   [else (cons (substring str 0 n) (split-string-at-n (substring str n) n))])) 
+
+(define (eighth-challenge file)
+  (let* ([inp (map (λ(s) (split-string-at-n s 32)) (file->lines file))]
+         [rdup (map remove-duplicates inp)]
+         [rinp (map cons inp rdup)])
+    (apply string-append (car (car (filter (λ(s) (< (length (cdr s)) 10)) rinp))))))
+
+(eighth-challenge "8.txt")
          
