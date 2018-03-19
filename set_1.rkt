@@ -1,7 +1,9 @@
 #lang racket
 (require bitsyntax
          redex
-         crypto)
+         crypto
+         crypto/all)
+(use-all-factories!)
 
 ;;taken from library
 ;;https://github.com/racket/racket/blob/master/racket/collects/file/sha1.rkt
@@ -332,3 +334,19 @@ I go crazy when I hear a cymbal")
 (string=? (fifth-challenge str "ICE") "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
 
 
+
+;;Implement you own crypto.
+;; key is 128 bit and message 128 bit
+
+
+(define key (generate-cipher-key '(aes ecb)))
+(define iv (generate-cipher-iv '(aes ecb)))
+(define ciphertext (encrypt '(aes ecb) key iv #"Hello world!"))
+(define plaintext (decrypt '(aes ecb) key iv ciphertext))
+
+(define (seventh-challenge file)
+  (let* ([inp (apply string-append (file->lines file))])
+    (decrypt '(aes ecb) #"YELLOW SUBMARINE" #"" (base64-decode inp))))
+
+(seventh-challenge "7.txt")
+         
